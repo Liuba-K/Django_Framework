@@ -1,6 +1,7 @@
 {% extends 'mainapp/base.html' %}
 
 {% block content %}
+  {% include 'mainapp/components/top_nav_panel.html' %}
 
   <div class="container-md">
 
@@ -10,51 +11,16 @@
 
       <div class="col-lg-8">
 
+        {% for i in range %}
         <div class="card my-2">
           <div class="card-body">
-            <h5 class="card-title">Новость</h5>
-            <h6 class="card-subtitle mb-2 text-muted">2021-04-29 20-50-26</h6>
-            <p class="card-text">Предварительное описание новости</p>
+            <h5 class="card-title">{{ news_title }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{ news_date }}</h6>
+            <p class="card-text">{{ desсription }}</p>
             <a href="#" class="card-link">Подробнее</a>
           </div>
         </div>
-
-        <div class="card my-2">
-          <div class="card-body">
-            <h5 class="card-title">Новость</h5>
-            <h6 class="card-subtitle mb-2 text-muted">2021-04-28 20-50-26</h6>
-            <p class="card-text">Предварительное описание новости</p>
-            <a href="#" class="card-link">Подробнее</a>
-          </div>
-        </div>
-
-        <div class="card my-2">
-          <div class="card-body">
-            <h5 class="card-title">Новость</h5>
-            <h6 class="card-subtitle mb-2 text-muted">2021-04-27 20-50-26</h6>
-            <p class="card-text">Предварительное описание новости</p>
-            <a href="#" class="card-link">Подробнее</a>
-          </div>
-        </div>
-
-        <div class="card my-2">
-          <div class="card-body">
-            <h5 class="card-title">Новость</h5>
-            <h6 class="card-subtitle mb-2 text-muted">2021-04-26 20-50-26</h6>
-            <p class="card-text">Предварительное описание новости</p>
-            <a href="#" class="card-link">Подробнее</a>
-          </div>
-        </div>
-
-        <div class="card mt-2">
-          <div class="card-body">
-            <h5 class="card-title">Новость</h5>
-            <h6 class="card-subtitle mb-2 text-muted">2021-04-25 20-50-26</h6>
-            <p class="card-text">Предварительное описание новости</p>
-            <a href="#" class="card-link">Подробнее</a>
-          </div>
-        </div>
-
+        {% endfor %}
       </div>
 
       <div class="col-lg-4">
@@ -100,5 +66,5 @@
 
 
   </div>
-
+  {% include 'mainapp/components/footer.html' %}
 {% endblock content %}

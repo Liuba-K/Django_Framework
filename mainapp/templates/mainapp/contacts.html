@@ -1,6 +1,7 @@
 {% extends 'mainapp/base.html' %}
 
 {% block content %}
+  {% include 'mainapp/components/top_nav_panel.html' %}
 
   <div class="container-md">
 
@@ -113,5 +114,6 @@
     </p>
 
   </div>
+  {% include 'mainapp/components/footer.html' %}
 
 {% endblock content %}
