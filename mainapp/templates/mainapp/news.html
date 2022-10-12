@@ -2,7 +2,7 @@
 
 {% block content %}
   {% include 'mainapp/components/top_nav_panel.html' %}
-  {% load additional_new %}
+
   <div class="container-md">
 
 
@@ -17,7 +17,7 @@
             <h5 class="card-title">{{ news_title }}</h5>
             <h6 class="card-subtitle mb-2 text-muted">{{ news_date|date:"Y-m-d h:i:s" }}</h6>
             <p class="card-text">{{ news_preview}}</p>
-            <a href="{{ '#'|additional_new }}" class="card-link">Подробнее</a>
+            <a href="#" class="card-link">Подробнее</a>
           </div>
         </div>
         {% endfor %}
@@ -66,4 +66,6 @@
 
 
   </div>
-  {% include 'mainapp/components/footer.html' 
+  {% include 'mainapp/components/footer.html'
+
+{% endblock content %}
