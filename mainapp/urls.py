@@ -1,16 +1,15 @@
 from django.urls import path
 from .views import *
 
-#from mainapp import views
 from mainapp.apps import MainappConfig
 
-app_name = MainappConfig.name
+app_name = MainappConfig.name # создаем вместе с namespace
 
 urlpatterns = [
-    path('', MainPageView.as_view()),
-    path('news/', NewsPageView.as_view()),
-    path('courses/', CoursesPageView.as_view()),
-    path('contacts/', ContactsPageView.as_view()),
-    path('doc_site/', DocSitePageView.as_view()),
-    path('login/', LoginPageView.as_view()),
+    path('', MainPageView.as_view(), name='main'),
+    path('news/', NewsPageView.as_view(), name='news'),
+    path('courses_list/', CoursesPageView.as_view(), name='courses'),
+    path('contacts/', ContactsPageView.as_view(), name='contacts'),
+    path('doc_site/', DocSitePageView.as_view(), name='docs'),
+    path('login/', LoginPageView.as_view(), name='login'),
 ]
