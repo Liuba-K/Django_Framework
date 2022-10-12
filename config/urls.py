@@ -19,7 +19,7 @@ from django.views.generic import RedirectView
 
 
 urlpatterns = [
-    path("", RedirectView.as_view()),
+    path('', RedirectView.as_view(url='mainapp/')), #нужно для исключения ошибки 404
     path('admin/', admin.site.urls),
     path('mainapp/', include('mainapp.urls'))
 ]
