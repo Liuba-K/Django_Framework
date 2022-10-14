@@ -1,6 +1,8 @@
 from django.views.generic import TemplateView
 from datetime import datetime
 
+from .models import News
+
 class MainPageView(TemplateView):
     template_name = "mainapp/index.html"
 
@@ -11,11 +13,8 @@ class NewsPageView(TemplateView):
     # Get all previous data
         context = super().get_context_data(**kwargs)
 
-        # Create your own data
-        context["news_title"] = "Новость"
-        context["news_preview"] = "Предварительное описание новости"
-        context["news_date"] = datetime.now()
-        context["range"] = range(5)
+        context["news"] = News.objects.all()
+
         return context
 
 class NewsWithPaginatorView(NewsPageView):

@@ -11,12 +11,12 @@
 
       <div class="col-lg-8">
 
-        {% for i in range %}
+        {% for new in news %}
         <div class="card my-2">
           <div class="card-body">
-            <h5 class="card-title">{{ news_title }}</h5>
-            <h6 class="card-subtitle mb-2 text-muted">{{ news_date|date:"Y-m-d h:i:s" }}</h6>
-            <p class="card-text">{{ news_preview}}</p>
+            <h5 class="card-title">{{ new.title }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{ new.create_date|date:"Y-m-d h:i:s" }}</h6>
+            <p class="card-text">{{ new.body }}</p>
             <a href="#" class="card-link">Подробнее</a>
           </div>
         </div>
