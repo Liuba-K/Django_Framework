@@ -1,0 +1,71 @@
+{% extends 'mainapp/base.html' %}
+
+{% block content %}
+  {% include 'mainapp/components/top_nav_panel.html' %}
+
+  <div class="container-md">
+
+
+
+    <div class="row">
+
+      <div class="col-lg-8">
+
+        {% for new in news %}
+        <div class="card my-2">
+          <div class="card-body">
+            <h5 class="card-title">{{ new.title }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{ new.create_date|date:"Y-m-d h:i:s" }}</h6>
+            <p class="card-text">{{ new.body }}</p>
+            <a href="#" class="card-link">Подробнее</a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="col-lg-4">
+        <div class="card my-2 sticky-top">
+          <div class="card-header">
+            Фильтры
+          </div>
+          <div class="card-body">
+            <form action="">
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="basic-addon1">Дата от...</span>
+                </div>
+                <input type="date" class="form-control" name="dateFrom">
+              </div>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="basic-addon1">Дата до...</span>
+                </div>
+                <input type="date" class="form-control" name="dateTo">
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-block">Фильтровать</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="row justify-content-center align-items-center mt-3 mb-n3">
+      <nav aria-label="Page navigation example">
+        <ul class="pagination">
+          <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+          <li class="page-item"><a class="page-link" href="{% url 'mainapp:news_paginator' 1 %}">1</a></li>
+          <li class="page-item"><a class="page-link" href="{% url 'mainapp:news_paginator' 2 %}">2</a></li>
+          <li class="page-item"><a class="page-link" href="{% url 'mainapp:news_paginator' 3 %}">3</a></li>
+          <li class="page-item"><a class="page-link" href="#">Next</a></li>
+        </ul>
+      </nav>
+    </div>
+
+
+
+  </div>
+  {% include 'mainapp/components/footer.html'
+
+{% endblock content %}
