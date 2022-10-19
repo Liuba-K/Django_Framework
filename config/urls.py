@@ -13,10 +13,22 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import include, path
+from django.views.generic import RedirectView
+
+from mainapp.apps import MainappConfig #add
+from authapp.apps import AuthappConfig #add
 
 urlpatterns = [
+    path('', RedirectView.as_view(url='mainapp/')), #нужно для исключения ошибки 404
     path('admin/', admin.site.urls),
-    path('', include('mainapp.urls'))
+    path('mainapp/', include('mainapp.urls', namespace=MainappConfig.name)), # namespace="mainapp"
+    path('authapp/', include('authapp.urls', namespace=AuthappConfig.name)), # namespace="authapp"
+    path('social_auth/', include('social_django.urls', namespace='social')) #add
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
