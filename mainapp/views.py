@@ -1,5 +1,4 @@
 from django.views.generic import TemplateView
-from datetime import datetime
 
 from .models import News
 
@@ -33,5 +32,4 @@ class ContactsPageView(TemplateView):
 class DocSitePageView(TemplateView):
     template_name = "mainapp/doc_site.html"
 
-class LoginPageView(TemplateView):
-    template_name = "mainapp/login.html"
+

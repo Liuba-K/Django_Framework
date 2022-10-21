@@ -13,5 +13,5 @@ urlpatterns = [
     path('courses_list/', CoursesPageView.as_view(), name='courses'),
     path('contacts/', ContactsPageView.as_view(), name='contacts'),
     path('doc_site/', DocSitePageView.as_view(), name='docs'),
-    path('login/', LoginPageView.as_view(), name='login'),
+
 ]

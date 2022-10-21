@@ -6,7 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http.response import HttpResponseRedirect #add
 from django.urls import reverse_lazy #add
 from django.utils.safestring import mark_safe #add
-from django.utils.translation import gettext_lazy as _ #add
+from django.utils.translation import gettext_lazy as _ #add используют для переводов
 from django.views.generic import TemplateView
 
 from authapp import models
@@ -32,13 +32,16 @@ class CustomLoginView(LoginView):
             )
         return self.render_to_response(self.get_context_data(form=form))
 
+
 class CustomLogoutView(LogoutView):
     def dispatch(self, request, *args, **kwargs):
         messages.add_message(self.request, messages.INFO, _("See you later!"))
         return super().dispatch(request, *args, **kwargs)
 
+
 class RegisterView(TemplateView):
     template_name = "registration/register.html"
+
     def post(self, request, *args, **kwargs):
         try:
             if all(
@@ -48,7 +51,7 @@ class RegisterView(TemplateView):
                     request.POST.get("password1"),
                     request.POST.get("password1")
                     == request.POST.get("password2"),
-                )
+                )#все поля существуют
             ):
                 new_user = models.CustomUser.objects.create(
                     username=request.POST.get("username"),
@@ -60,7 +63,7 @@ class RegisterView(TemplateView):
                     avatar=request.FILES.get("avatar"),
                     email=request.POST.get("email"),
                 )
-                new_user.set_password(request.POST.get("password1"))
+                new_user.set_password(request.POST.get("password1"))#пароль захешированный
                 new_user.save()
                 messages.add_message(
                     request, messages.INFO, _("Registration success!")
@@ -74,10 +77,12 @@ class RegisterView(TemplateView):
             )
             return HttpResponseRedirect(reverse_lazy("authapp:register"))
 
+
 class ProfileEditView(LoginRequiredMixin, TemplateView):
     template_name = "registration/profile_edit.html"
     login_url = reverse_lazy("authapp:login")
-    def post(self, request, *args, **kwargs):
+
+    def post(self, request, *args, **kwargs): # почему не активна
         try:
             if request.POST.get("username"):
                 request.user.username = request.POST.get("username")

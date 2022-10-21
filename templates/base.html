@@ -17,12 +17,18 @@
     <!-- FontAwesome -->
     <link rel="stylesheet" href='{% static "css/fontawesome.all.min.css" %}' >
 
-    <title>Welcome to Braniac!</title>
+    <title>
+        {% block title %}
+            Welcome to Braniac!
+        {% endblock title %}
+    </title>
 </head>
 
 <body>
 
-
+    {% block messages %}
+        {% include 'components/messages.html' %}
+    {% endblock messages %}
 
 
     {% block content %}
@@ -43,6 +49,21 @@
     <!-- FontAwesome -->
     <script src='{% static "js/fontawesome.all.min.js" %}'></script>
 
+    {% block js %}
+    <!--  Toasts -->
+    <script>
+        $(document).ready(function () {
+
+            {% if messages %}
+
+            $(".toast").toast({ delay: 5000});
+            $(".toast").toast("show");
+            {% endif %}
+
+        });
+    </script>
+
+    {% endblock js %}
 </body>
 
 </html>
