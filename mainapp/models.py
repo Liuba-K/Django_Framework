@@ -32,6 +32,10 @@ class News(models.Model):
         self.deleted = True
         self.save()
 
+    class Meta:
+        verbose_name = _("News")
+        verbose_name_plural = _("News")
+        ordering = ("-created",)
 
 class Courses(models.Model):
     name = models.CharField(max_length=256, verbose_name="Name")
@@ -57,6 +61,11 @@ class Courses(models.Model):
     def delete(self, *args):
         self.deleted = True
         self.save()
+
+    class Meta:
+        verbose_name = _("courses")
+        verbose_name_plural = _("courses")
+        ordering = ("-created",)
 
 
 class Lesson(models.Model):
@@ -87,6 +96,9 @@ class Lesson(models.Model):
 
     class Meta:
         ordering = ("course", "num")
+        verbose_name = _("Lesson")
+        verbose_name_plural = _("Lessons")
+
 
 class CourseTeachers(models.Model):
     course = models.ManyToManyField(Courses)
@@ -103,3 +115,9 @@ class CourseTeachers(models.Model):
     def delete(self, *args):
         self.deleted = True
         self.save()
+
+    class Meta:
+        verbose_name = _("Teachers")
+        verbose_name_plural = _("Teachers")
+        ordering = ("-created",)
+
