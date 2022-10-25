@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'mainapp',
     'authapp',
     'social_django',
+    'crispy_forms',
     #'markdownify.apps.MarkdownifyConfig',
 ]
 
@@ -156,3 +157,5 @@ MEDIA_ROOT = BASE_DIR / "media"
 #OAutn
 SOCIAL_AUTH_GITHUB_KEY = "a162dda7a1d12ac58844"
 SOCIAL_AUTH_GITHUB_SECRET = "10904ede3d0094054743616cc4b2c78cd219e5ae"
+
+CRISPY_TEMPLATE_PACK = "bootstrap4"
