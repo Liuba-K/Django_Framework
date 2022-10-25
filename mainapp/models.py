@@ -1,6 +1,6 @@
 from django.db import models
 from mainapp.managers.news_managers import NewsManager  # импортируем manager
-
+from django.utils.translation import gettext_lazy as _
 
 class News(models.Model):
     objects = NewsManager()
@@ -35,7 +35,6 @@ class News(models.Model):
     class Meta:
         verbose_name = _("News")
         verbose_name_plural = _("News")
-        ordering = ("-created",)
 
 class Courses(models.Model):
     name = models.CharField(max_length=256, verbose_name="Name")
@@ -65,7 +64,6 @@ class Courses(models.Model):
     class Meta:
         verbose_name = _("courses")
         verbose_name_plural = _("courses")
-        ordering = ("-created",)
 
 
 class Lesson(models.Model):
@@ -119,5 +117,7 @@ class CourseTeachers(models.Model):
     class Meta:
         verbose_name = _("Teachers")
         verbose_name_plural = _("Teachers")
-        ordering = ("-created",)
+
+
+
 

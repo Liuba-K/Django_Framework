@@ -82,7 +82,7 @@ class ProfileEditView(LoginRequiredMixin, TemplateView):
     template_name = "registration/profile_edit.html"
     login_url = reverse_lazy("authapp:login")
 
-    def post(self, request, *args, **kwargs): # почему не активна
+    def post(self, request, *args, **kwargs):
         try:
             if request.POST.get("username"):
                 request.user.username = request.POST.get("username")

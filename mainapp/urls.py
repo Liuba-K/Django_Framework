@@ -4,7 +4,7 @@ from .views import *
 
 from mainapp.apps import MainappConfig
 
-app_name = MainappConfig.name # создаем вместе с namespace
+app_name = MainappConfig.name  # создаем вместе с namespace
 
 urlpatterns = [
     path('', MainPageView.as_view(), name='main'),
