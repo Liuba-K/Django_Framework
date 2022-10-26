@@ -16,10 +16,10 @@ urlpatterns = [
     path("news/<int:pk>/delete", NewsDeleteView.as_view(), name="news_delete"),
 
     # a courses зачем менять?
-    #path("courses/", CoursesListView.as_view(), name="courses"),
-    #path("courses/<int:pk>/", CoursesDetailView.as_view(), name="courses_detail"),
-
-    path('courses_list/', CoursesPageView.as_view(), name='courses'),
+    path("courses/", CoursesListView.as_view(), name="courses"),
+    path("courses/<int:pk>/", CoursesDetailView.as_view(), name="courses_detail"),
+    path("course_feedback/", CourseFeedbackFormProcessView.as_view(), name="course_feedback"),
+    #path('courses_list/', CoursesPageView.as_view(), name='courses'),
     path('contacts/', ContactsPageView.as_view(), name='contacts'),
     path('doc_site/', DocSitePageView.as_view(), name='docs'),
 
