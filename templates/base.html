@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ru">
+
+{% load static %}
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href='{% static "css/bootstrap.min.css" %}' >
+
+    <!-- ChartJS -->
+    <link rel="stylesheet" href='{% static "css/Chart.min.css" %}' >
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href='{% static "css/fontawesome.all.min.css" %}' >
+
+    <title>
+        {% block title %}
+            Welcome to Braniac!
+        {% endblock title %}
+    </title>
+</head>
+
+<body>
+
+    {% block messages %}
+        {% include 'components/messages.html' %}
+    {% endblock messages %}
+
+
+    {% block content %}
+
+    {% endblock content %}
+
+
+
+    <!-- JavaScript section -->
+    <!-- Bootstrap -->
+    <script src='{% static "js/jquery-3.6.0.min.js" %}'></script>
+    <script src='{% static "js/popper.min.js" %}'></script>
+    <script src='{% static "js/bootstrap.min.js" %}'></script>
+
+    <!-- ChartJs -->
+    <script src='{% static "js/Chart.min.js" %}'></script>
+
+    <!-- FontAwesome -->
+    <script src='{% static "js/fontawesome.all.min.js" %}'></script>
+
+    {% block js %}
+    <!--  Toasts -->
+    <script>
+        $(document).ready(function () {
+
+            {% if messages %}
+
+            $(".toast").toast({ delay: 5000});
+            $(".toast").toast("show");
+            {% endif %}
+
+        });
+    </script>
+
+    {% endblock js %}
+</body>
+
+</html>
