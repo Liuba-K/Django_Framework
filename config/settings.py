@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'authapp',
     'social_django',
     'crispy_forms',
-    #'markdownify.apps.MarkdownifyConfig',
+    'markdownify.apps.MarkdownifyConfig',
 ]
 
 MIDDLEWARE = [
@@ -159,3 +159,32 @@ SOCIAL_AUTH_GITHUB_KEY = "a162dda7a1d12ac58844"
 SOCIAL_AUTH_GITHUB_SECRET = "10904ede3d0094054743616cc4b2c78cd219e5ae"
 
 CRISPY_TEMPLATE_PACK = "bootstrap4"
+
+LOG_FILE = BASE_DIR / "var" / "log" / "main_log.log"
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False, #не отключаем существующие логгеры
+    "formatters": {
+        "console": { #имя
+            "format": "[%(asctime)s] %(levelname)s %(name)s (%(lineno)d) %(message)s"
+        },
+    },
+    "handlers": { #обработчик
+        "file": {
+            "level": "INFO",
+            "class": "logging.FileHandler", #поведение логгера
+            "filename": LOG_FILE,
+            "formatter": "console",
+        },
+        "console": {"class": "logging.StreamHandler", "formatter": "console"},
+    },
+    "loggers": {
+        "django": {"level": "INFO", "handlers": ["console"]},
+        "mainapp": {
+            "level": "DEBUG",  # уровень от debug и выше
+            "handlers": ["file"],
+        }
+    },
+}
+

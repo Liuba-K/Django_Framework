@@ -8,19 +8,19 @@ class News(models.Model):
     objects = NewsManager()
 
     title = models.CharField(max_length=256, verbose_name='Title')
-    preamble = models.CharField(max_length=1024, blank=True, null=True, verbose_name='Preamble')
+    preambule = models.CharField(max_length=1024, blank=True, null=True, verbose_name='Preamble')
     body = models.TextField(blank=False, null=False, verbose_name='Body')
     body_as_markdown = models.BooleanField(
         default=False,
         verbose_name='As markdown'
     )
 
-    create_date = models.DateTimeField(
+    created = models.DateTimeField(
         auto_now_add=True,
         verbose_name='Date of creating',
         editable=False
     )
-    update_date = models.DateTimeField(
+    updated = models.DateTimeField(
         auto_now=True,
         verbose_name='Date of editing',
         editable=False
@@ -28,7 +28,7 @@ class News(models.Model):
     deleted = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.title
+        return f"{self.pk} {self.title}"
 
     def delete(self, *args):
         self.deleted = True
@@ -58,7 +58,7 @@ class Courses(models.Model):
     deleted = models.BooleanField(default=False)
 
     def __str__(self) -> str:
-        return self.name
+        return f"{self.pk} {self.name}"
 
     def delete(self, *args):
         self.deleted = True
@@ -125,8 +125,8 @@ class CourseTeachers(models.Model):
 
     def __str__(self) -> str:
         return "{0:0>3} {1} {2}".format(
-            self.name_second, self.name_first
-        )#pk -это что? self.pk,
+            self.pk, self.name_second, self.name_first
+        )
 
     def delete(self, *args):
         self.deleted = True

@@ -22,10 +22,10 @@
             <h5 class="card-title">{{ item.title }}</h5>
             <h6 class="card-subtitle mb-2 text-muted">{{ item.create_date|date:"Y-m-d h:i:s" }}</h6>
 
-            <p class="card-text">{{ item.body }}</p>
+            <p class="card-text">{{ item.preambule }}</p>
             <div class="row">
               <div class="col">
-                <a href="#" class="card-link">Подробнее</a>
+                <a href="{% url 'mainapp:news_detail' pk=item.pk %" class="card-link">Подробнее</a>
               </div>
             {% if perms.mainapp.change_news %}
             <div class="col-1 text-center">
