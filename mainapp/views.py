@@ -1,33 +1,60 @@
-from django.views.generic import TemplateView
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy
+from mainapp import models as mainapp_models
 
-from .models import News
+from django.views.generic import TemplateView, CreateView, DeleteView, DetailView, ListView, UpdateView
+
+#from .models import News
+
 
 class MainPageView(TemplateView):
     template_name = "mainapp/index.html"
 
-class NewsPageView(TemplateView):
-    template_name = "mainapp/news.html"
 
-    def get_context_data(self, **kwargs):
-    # Get all previous data
-        context = super().get_context_data(**kwargs)
 
-        context["news"] = News.objects.all()
+class NewsListView(ListView):
+    model = mainapp_models.News
+    paginate_by = 5
 
-        return context
+    def get_queryset(self):
+        return super().get_queryset().filter(deleted=False)
 
-class NewsWithPaginatorView(NewsPageView):
 
-    def get_context_data(self, page, **kwargs):
-        context = super().get_context_data(page=page, **kwargs)
-        context["page_num"] = page
-        return context
+
+
+
+class NewsCreateView(PermissionRequiredMixin, CreateView):
+    model = mainapp_models.News
+    fields = "__all__"
+    success_url = reverse_lazy("mainapp:news")
+    permission_required = ("mainapp.add_news",)
+
+
+class NewsDetailView(DetailView):
+    model = mainapp_models.News
+
+
+class NewsUpdateView(PermissionRequiredMixin, UpdateView):
+    model = mainapp_models.News
+    fields = "__all__"
+    success_url = reverse_lazy("mainapp:news")
+    permission_required = ("mainapp.change_news",)
+
+
+class NewsDeleteView(PermissionRequiredMixin, DeleteView):
+    model = mainapp_models.News
+    success_url = reverse_lazy("mainapp:news")
+    permission_required = ("mainapp.delete_news",)
+
 
 class CoursesPageView(TemplateView):
     template_name = "mainapp/courses_list.html"
 
+
 class ContactsPageView(TemplateView):
     template_name = "mainapp/contacts.html"
+
 
 class DocSitePageView(TemplateView):
     template_name = "mainapp/doc_site.html"
