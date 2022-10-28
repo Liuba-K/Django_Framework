@@ -27,14 +27,14 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"] #доступ ко всем
 
-#if DEBUG:
-#    INTERNAL_IPS = [
-#        "192.168.100.3",  #внутренний IP
-#        "127.0.0.1",  # кольцевой IP/локальный-может быть на удаленный
- #   ]
-INTERNAL_IPS = [
+if DEBUG:
+    INTERNAL_IPS = [
+        "172.24.14.148",  #внутренний IP
         "127.0.0.1",  # кольцевой IP/локальный-может быть на удаленный
     ]
+#INTERNAL_IPS = [
+#        "127.0.0.1",] # кольцевой IP/локальный-может быть на удаленный
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -206,3 +206,22 @@ CACHES = {
         },
     }
 }
+
+CELERY_BROKER_URL = "redis://localhost:6379"
+CELERY_RESULT_BACKEND = "redis://localhost:6379"
+
+# Read about sending email:
+# https://docs.djangoproject.com/en/3.2/topics/email/
+# Full list of email settings:
+# https://docs.djangoproject.com/en/3.2/ref/settings/#email
+# EMAIL_HOST = "localhost"
+# EMAIL_PORT = "25"
+# For debugging: python -m smtpd -n -c DebuggingServer localhost:25
+# EMAIL_HOST_USER = "django@geekshop.local"
+# EMAIL_HOST_PASSWORD = "geekshop"
+# EMAIL_USE_SSL = False
+# If server support TLS:
+# EMAIL_USE_TLS = True
+# Email as files for debug
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+EMAIL_FILE_PATH = "var/email-messages/"
