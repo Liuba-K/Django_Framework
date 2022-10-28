@@ -25,9 +25,16 @@ SECRET_KEY = 'django-insecure-4!6ad7ullhv&z=14eab9=uj&4w9tk(zmrzp#r#$@*p68k)%x0r
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"] #доступ ко всем
 
-
+#if DEBUG:
+#    INTERNAL_IPS = [
+#        "192.168.100.3",  #внутренний IP
+#        "127.0.0.1",  # кольцевой IP/локальный-может быть на удаленный
+ #   ]
+INTERNAL_IPS = [
+        "127.0.0.1",  # кольцевой IP/локальный-может быть на удаленный
+    ]
 # Application definition
 
 INSTALLED_APPS = [
@@ -42,6 +49,7 @@ INSTALLED_APPS = [
     'social_django',
     'crispy_forms',
     'markdownify.apps.MarkdownifyConfig',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -52,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -188,3 +197,12 @@ LOGGING = {
     },
 }
 
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379", #прописывается протокол redis
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+    }
+}

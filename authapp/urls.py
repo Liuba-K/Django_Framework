@@ -1,4 +1,5 @@
 from django.urls import path
+
 from authapp.views import * #change
 from authapp import views #new
 from authapp.apps import AuthappConfig
