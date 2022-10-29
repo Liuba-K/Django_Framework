@@ -55,6 +55,8 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -135,13 +137,15 @@ LOGOUT_REDIRECT_URL = "mainapp:main"
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en'
 
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_L10N = True  # Django будет отображать числа и даты, используя формат текущей локали.
+
+USE_TZ = True  # datetimes будет учитывать часовой пояс.
 
 
 # Static files (CSS, JavaScript, Images)
@@ -225,3 +229,7 @@ CELERY_RESULT_BACKEND = "redis://localhost:6379"
 # Email as files for debug
 EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 EMAIL_FILE_PATH = "var/email-messages/"
+
+LOCALE_PATHS = [BASE_DIR / "locale"]
+
+#EMAIL_FILE_PATH = BASE_DIR / "var" / "email-messages" /

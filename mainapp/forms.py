@@ -21,6 +21,7 @@ class CourseFeedbackForm(forms.ModelForm):
             "rating": forms.RadioSelect(),
         } #поля формы
 
+
 class MailFeedbackForm(forms.Form):
     user_id = forms.IntegerField(widget=forms.HiddenInput)
     message = forms.CharField(

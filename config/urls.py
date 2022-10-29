@@ -27,6 +27,7 @@ from authapp.apps import AuthappConfig #add
 
 urlpatterns = [
     path('', RedirectView.as_view(url='mainapp/')), #нужно для исключения ошибки 404
+    path("i18n/", include("django.conf.urls.i18n")),
     path('admin/', admin.site.urls),
     path('mainapp/', include('mainapp.urls', namespace=MainappConfig.name)), # namespace="mainapp"
     path('authapp/', include('authapp.urls', namespace=AuthappConfig.name)), # namespace="authapp"

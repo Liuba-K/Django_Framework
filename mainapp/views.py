@@ -25,7 +25,7 @@ class MainPageView(TemplateView):
 
 class NewsListView(ListView):
     model = mainapp_models.News
-    paginate_by = 5
+    paginate_by = 2
 
     def get_queryset(self):
         return super().get_queryset().filter(deleted=False)
@@ -57,6 +57,11 @@ class NewsDeleteView(PermissionRequiredMixin, DeleteView):
 
 class CoursesListView(TemplateView): #change name
     template_name = "mainapp/courses_list.html"
+    #model = mainapp_models.Courses
+    #paginate_by = 5
+
+    def get_queryset(self):
+        return super().get_queryset().filter(deleted=False)
 
     def get_context_data(self, **kwargs):
         context = super(CoursesListView, self).get_context_data(**kwargs)

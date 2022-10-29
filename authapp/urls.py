@@ -13,5 +13,5 @@ urlpatterns = [
     path(
         "profile_edit/<int:pk>/",
         views.ProfileEditView.as_view(), name="profile_edit",
-    ), # error403
+    ),  # error403
 ]
