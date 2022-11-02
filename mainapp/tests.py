@@ -11,6 +11,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from social_core.pipeline import user
 
+from authapp.models import CustomUser
 from mainapp.models import News
 import logging
 from django.conf import settings
@@ -64,11 +65,11 @@ class TestNewsPage(TestCase):
                 preambule=f'Preamble{i}',
                 body=f'Body{i}'
             )
-        # User.objects.create_superuser(username='admin', password='1')
+        CustomUser.objects.create_superuser(username='admin', password='1')
         self.client_with_auth = Client()
         path_auth = reverse("authapp:login")
         self.client_with_auth.post(  # аутентификации нового клиента
-            path_auth, data={"username": "Luba1", "password": "lubava2211"}
+            path_auth, data={"username": "admin", "password": "1"}
         )
 
     def test_open_page(self):
@@ -76,16 +77,16 @@ class TestNewsPage(TestCase):
         result = self.client.get(path)
         self.assertEqual(result.status_code, HTTPStatus.OK)
 
-    def test_page_open_crete_deny_access(self):
+    def test_page_open_create_deny_access(self):
         path = reverse("mainapp:news_create")
 
         result = self.client.get(path)
         self.assertEqual(result.status_code, HTTPStatus.FOUND)
 
-    def test_page_open_crete_by_admin(self):
+    def test_page_open_create_by_admin(self):
         path = reverse("mainapp:news_create")
         result = self.client_with_auth.get(path)
-        self.assertEqual(result.status_code, HTTPStatus.FOUND)  # нужно Ok проблема с аутентификацией
+        self.assertEqual(result.status_code, HTTPStatus.OK)  # нужно Ok проблема с аутентификацией #есть форма
 
     def test_create_in_web(self):
         counter_before = mainapp_models.News.objects.count()
@@ -98,8 +99,8 @@ class TestNewsPage(TestCase):
                 "body": "NewTestNews001",
             },
         )
-        #self.assertGreater(mainapp_models.News.objects.count(), counter_before)
-        self.assertEqual(News.objects.all().count(), counter_before)  # сообщение не создается
+        self.assertGreater(mainapp_models.News.objects.count(), counter_before)
+        #self.assertEqual(News.objects.all().count(), counter_before)  # сообщение не создается
 
     def test_page_open_update_deny_access(self):
         news_obj = mainapp_models.News.objects.first()
@@ -113,7 +114,7 @@ class TestNewsPage(TestCase):
 
         path = reverse("mainapp:news_update", args=[news_obj.pk])
         result = self.client_with_auth.get(path)
-        self.assertEqual(result.status_code, HTTPStatus.FOUND) # c OK проваливается
+        self.assertEqual(result.status_code, HTTPStatus.OK)
 
     def test_delete_deny_access(self):
         news_obj = mainapp_models.News.objects.first()
