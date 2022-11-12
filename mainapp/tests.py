@@ -1,40 +1,26 @@
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.core.mail import send_mail
+from django.core import mail as django_mail
+from django.urls import reverse
+from selenium.webdriver.chrome.webdriver import WebDriver
+
+from selenium.webdriver.support import expected_conditions as EC
+from authapp import models as authapp_models
+from selenium import webdriver
+from pathlib import Path
 import pickle #add
 from http import HTTPStatus
-from telnetlib import EC
-from unittest import mock #add
 
-from django.contrib.auth.models import User
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from unittest import mock #add
 from django.test import TestCase, Client
 from django.urls import reverse
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
-from social_core.pipeline import user
 
 from authapp.models import CustomUser
-from mainapp.models import News
-import logging
-from django.conf import settings
-from django.contrib import messages
-from django.contrib.auth.mixins import (LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin)
-from django.core.cache import cache
-from django.http import FileResponse, JsonResponse
-from django.http.response import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
-from django.template.loader import render_to_string
-from django.urls import reverse_lazy
-from django.utils.translation import gettext_lazy as _
-from django.views.generic import (
-    CreateView,
-    DeleteView,
-    DetailView,
-    ListView,
-    TemplateView,
-    UpdateView,
-    View)
+from config import settings
+from mainapp.models import News, CourseFeedback, Courses
 
-from selenium.webdriver.firefox.webdriver import WebDriver
-from mainapp import forms as mainapp_forms
 from mainapp import models as mainapp_models
 from mainapp import tasks as mainapp_tasks
 
@@ -86,7 +72,7 @@ class TestNewsPage(TestCase):
     def test_page_open_create_by_admin(self):
         path = reverse("mainapp:news_create")
         result = self.client_with_auth.get(path)
-        self.assertEqual(result.status_code, HTTPStatus.OK)  # нужно Ok проблема с аутентификацией #есть форма
+        self.assertEqual(result.status_code, HTTPStatus.OK)
 
     def test_create_in_web(self):
         counter_before = mainapp_models.News.objects.count()
@@ -100,7 +86,6 @@ class TestNewsPage(TestCase):
             },
         )
         self.assertGreater(mainapp_models.News.objects.count(), counter_before)
-        #self.assertEqual(News.objects.all().count(), counter_before)  # сообщение не создается
 
     def test_page_open_update_deny_access(self):
         news_obj = mainapp_models.News.objects.first()
@@ -123,17 +108,87 @@ class TestNewsPage(TestCase):
         self.assertEqual(result.status_code, HTTPStatus.FOUND)
 
 
-class TestNewsSelenium(StaticLiveServerTestCase):
-    fixtures = (
-        "authapp/fixtures/001_users.json",
-        "mainapp/fixtures/001_news.json",
-    )
+class TestCoursesWithMock(TestCase):
 
-    def setUp(self):
+# Тест, проверяющий доступность страницы, которая использует систему кеширования.
+# ? cache feedback and course...через 5 мин
+    def setUp(self) -> None:
         super().setUp()
 
+        self.user = CustomUser.objects.create_superuser(username='admin', password='1')
+        self.client_with_auth = Client()
+        path_auth = reverse("authapp:login")
+
+        self.client_with_auth.post(  # аутентификации нового клиента
+            path_auth, data={"username": "admin", "password": "1"}
+        )
+
+        self.course = Courses.objects.create(
+            name = "Python"
+        )
+
+
+    def test_page_open_detail(self):
+        course_obj = CourseFeedback.objects.create(
+            user=self.user,
+            course=self.course
+        )
+        #course_obj = mainapp_models.CourseFeedback.objects.get(pk=1)
+        path = reverse("mainapp:courses_detail", args=[course_obj.pk])
+        file_path = Path(__file__).resolve().parent / "fixtures" / "006_feedback_list_2.bin"
+        with open(file_path, "rb" #заменила
+        ) as inpf, mock.patch("django.core.cache.cache.get") as mocked_cache:
+            loaded_cache = pickle.load(inpf)
+            mocked_cache.return_value = loaded_cache
+            print(loaded_cache)
+            result = self.client_with_auth.get(path)
+            self.assertEqual(result.status_code, HTTPStatus.OK)
+            self.assertTrue(mocked_cache.called)
+
+
+class TestTaskMailSend(TestCase):
+    def setUp(self) -> None:
+        super().setUp()
+
+        CustomUser.objects.create_superuser(username='admin', password='1')
+        self.client_with_auth = Client()
+        path_auth = reverse("authapp:login")
+        self.client_with_auth.post(  # аутентификации нового клиента
+            path_auth, data={"username": "admin", "password": "1"}
+        )
+
+    def test_mail_send(self):
+        message_text = "test_message_text"
+        user_obj = authapp_models.CustomUser.objects.first()
+        mainapp_tasks.send_feedback_mail(
+            {"user_id": user_obj.id, "message": message_text}
+        )
+        self.assertEqual(django_mail.outbox[0].body, message_text) # почему? django_mail
+    #Для проверки отправки используется то, что по умолчанию в качестве бэкенда во время исполнения
+#тестов используется django.core.mail.backends.locmem.EmailBackend. Он добавляет все отправленные
+#сооб#щения в список outbox из модуля django.core.mail.
+
+
+class TestNewsSelenium(StaticLiveServerTestCase):
+
+    def setUp(self) -> None:
+        super().setUp()
+
+        for i in range(10):
+            News.objects.create(
+                title=f'Title{i}',
+                preambule=f'Preamble{i}',
+                body=f'Body{i}'
+            )
+        #CustomUser.objects.create_superuser(username='admin', password='1')
+        #self.client_with_auth = Client()
+        #path_auth = reverse("authapp:login")
+        #self.client_with_auth.post(path_auth, data={"username": "admin", "password": "1"})
+
+        #driver = webdriver.Chrome
+
         self.selenium = WebDriver(
-            executable_path=settings.SELENIUM_DRIVER_PATH_FF
+            executable_path=settings.SELENIUM_DRIVER_PATH_FF/"chromedriver.exe"
         )
         self.selenium.implicitly_wait(10)
         # Login
@@ -143,8 +198,8 @@ class TestNewsSelenium(StaticLiveServerTestCase):
                 (By.CSS_SELECTOR, '[type="submit"]')
             )
         )
-        self.selenium.find_element_by_id("id_username").send_keys("Luba1")
-        self.selenium.find_element_by_id("id_password").send_keys("lubava2211")
+        self.selenium.find_element("id", "id_username").send_keys("admin")
+        self.selenium.find_element("id", "id_password").send_keys("1")
         button_enter.click()
         # Wait for footer
         WebDriverWait(self.selenium, 5).until(
@@ -157,7 +212,7 @@ class TestNewsSelenium(StaticLiveServerTestCase):
         path_add = reverse("mainapp:news_create")
 
         self.selenium.get(path_list)
-        button_create = WebDriverWait(self.selenium, 5).until(
+        button_create = WebDriverWait(self.selenium, 20).until(
             EC.visibility_of_element_located(
                 (By.CSS_SELECTOR, f'[href="{path_add}"]')
             )
@@ -165,7 +220,7 @@ class TestNewsSelenium(StaticLiveServerTestCase):
         print("Trying to click button ...")
         button_create.click()
         # Test that button clickable
-        WebDriverWait(self.selenium, 5).until(
+        WebDriverWait(self.selenium, 20).until(
             EC.visibility_of_element_located((By.ID, "id_title")) #active
         )
         print("Button clickable!")
@@ -179,17 +234,18 @@ class TestNewsSelenium(StaticLiveServerTestCase):
         path = f"{self.live_server_url}{reverse('mainapp:main')}"
 
         self.selenium.get(path)
-        navbar_el = WebDriverWait(self.selenium, 5).until(
+        navbar_el = WebDriverWait(self.selenium, 20).until(
             EC.visibility_of_element_located((By.CLASS_NAME, "navbar"))
         )
         try:
             self.assertEqual(
                 navbar_el.value_of_css_property("background-color"),
-                "rgb(255, 255, 155)",
+                "rgb(255, 255, 255, 1)",
             )
         except AssertionError:
+            file_path = Path(__file__).resolve().parent.parent / "var" / "screenshots"  #/ "001_navbar_el_scrnsht.png"
             with open(
-                "var/screenshots/001_navbar_el_scrnsht.png", "wb"
+                file_path, "wb"
             ) as outf:
                 outf.write(navbar_el.screenshot_as_png)
             raise
@@ -200,110 +256,4 @@ class TestNewsSelenium(StaticLiveServerTestCase):
         self.selenium.quit()
         super().tearDown()
 
-'''
-Не рабочие тесты
-    fixtures = (
-        "authapp/fixtures/001_users.json",
-        "mainapp/fixtures/001_news.json",
-    )
-    def setUp(self) -> None:
-        super().setUp()
-        self.client_with_auth = Client()
-        path_auth = reverse("authapp:login")
-        self.client_with_auth.post(  # аутентификации нового клиента
-            path_auth, data={"username": "admin", "password": "1"}
-        )
-    
-     
-    
-    def test_page_open_detail(self):
-        news_obj = mainapp_models.News.objects.first()
-        path = reverse("mainapp:news_detail", args=[news_obj.pk])
-        result = self.client.get(path)
-        self.assertEqual(result.status_code, HTTPStatus.OK)
-    
 
-    def test_failed_open_add_by_anonym(self):
-        path = reverse('mainapp:news_create')
-        result = self.client.get(path)
-        self.assertEqual(result.status_code, HTTPStatus.FOUND)  #302 Redirect
-
-    def test_create_news_item_by_admin(self):
-        news_count = News.objects.all().count() #кол-во новостей до создания
-        path = reverse('mainapp:news_create')
-        result = self.client_with_auth.post(
-            path,
-            data={
-                'title': 'Test title',
-                'preambule': 'Test preambule',
-                'body': 'Test body'
-            }
-        )
-        self.assertEqual(result.status_code, HTTPStatus.FOUND)
-        self.assertEqual(News.objects.all().count(), news_count) #сообщение не создается
-    
-        def test_update_in_web(self):
-        new_title = "NewTestTitle001"
-
-        news_obj = mainapp_models.News.objects.first()
-        self.assertNotEqual(news_obj.title, new_title)
-        path = reverse("mainapp:news_update", args=[news_obj.pk])
-        result = self.client_with_auth.post(
-            path,
-            data={
-                "title": new_title,
-                "preambule": news_obj.preambule,
-                "body": news_obj.body,
-            },
-        )
-        self.assertEqual(result.status_code, HTTPStatus.FOUND)
-        news_obj.refresh_from_db()
-        self.assertEqual(news_obj.title, new_title)
-    
-     def test_delete_in_web(self):
-        news_obj = mainapp_models.News.objects.first()
-        path = reverse("mainapp:news_delete", args=[news_obj.pk])
-        self.client_with_auth.post(path)
-        news_obj.refresh_from_db()
-        self.assertTrue(news_obj.deleted)
-
-    def login(self, data):
-        self.username = "Luba1"
-        self.password = "lubava2211"
-        User = User.objects.create(username=self.username)
-        user.set_password(self.password)
-        user.save()
-
-        c = Client()
-        c.login(username=self.username, password=self.password)
-        return c, user
-        #response = c.post('authapp:login', {'username': 'Luba1', 'password': 'lubava2211'})
-        #response.status_code #        200
-        #response = c.get('/customer/details/')
-        #response.content
-        
-        
-тест кэш падает с ошибкой 
-    def test_page_open_detail(self):
-        course_obj = mainapp_models.CourseFeedback.objects.get(pk=1)
-        path = reverse("mainapp:courses_detail", args=[course_obj.pk])
-        with open(
-                "mainapp/fixtures/006_feedback_list_1.bin", "rb" #заменила
-        ) as inpf, mock.patch("django.core.cache.cache.get") as mocked_cache:
-            mocked_cache.return_value = pickle.load(inpf)
-            result = self.client.get(path)
-            self.assertEqual(result.status_code, HTTPStatus.OK)
-            self.assertTrue(mocked_cache.called)
-mainapp.models.CourseFeedback.DoesNotExist: CourseFeedback matching query does not exist.
-
-отложенные задачи не подгружаются
-class TestTaskMailSend(TestCase):
-    fixtures = ("authapp/fixtures/001_users.json",)
-    def test_mail_send(self):
-        message_text = "test_message_text"
-        user_obj = authapp_models.CustomUser.objects.first()
-        mainapp_tasks.send_feedback_mail(
-            {"user_id": user_obj.id, "message": message_text}
-        )
-        self.assertEqual(django_mail.outbox[0].body, message_text)
-'''

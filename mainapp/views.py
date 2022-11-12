@@ -1,9 +1,11 @@
 import logging
 from django.conf import settings #new
 from django.core.cache import cache
+
 from django.contrib import messages
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin, UserPassesTestMixin
 from django.http import FileResponse, JsonResponse
+
 from django.http.response import HttpResponseRedirect
 from django.utils.translation import gettext_lazy as _
 
@@ -14,6 +16,7 @@ from django.views.generic import TemplateView, CreateView, DeleteView, DetailVie
 
 from mainapp import forms as mainapp_forms
 from mainapp import models as mainapp_models
+
 from mainapp import tasks as mainapp_tasks
 
 logger = logging.getLogger(__name__) #хотя глобальная переменная, но принято писать маленькими буквами
@@ -92,10 +95,10 @@ class CoursesDetailView(TemplateView):
             context["feedback_list"] = (mainapp_models.CourseFeedback.objects.filter(
                 course=context["course_object"]).order_by("-created", "-rating")[:5]
                 .select_related()
-                )
+            )
             cache.set(
-                f"feedback_list_{pk}", context["feedback_list"], timeout=300
-            )   # 5 minutes
+                f"feedback_list_{pk}", context["feedback_list"], timeout=60
+            )   # 1 minutes
             # Archive object for tests --->
             import pickle
             with open(
@@ -141,22 +144,23 @@ class ContactsPageView(TemplateView):
             cache.set(
                 f"mail_feedback_lock_{self.request.user.pk}",
                 "lock",
-                timeout=300,
+                timeout=5,
             )
             messages.add_message(
-                self.request, messages.INFO, _("Message sended")
+                self.request, messages.INFO, _("Message sent")
             )
-            mainapp_tasks.send_feedback_mail.delay(
+            mainapp_tasks.send_feedback_mail.apply_async(args=[
+                #delay(
                 {
                     "user_id": self.request.POST.get("user_id"),
                     "message": self.request.POST.get("message"),
-                }
+                }]
             )
         else:
             messages.add_message(
                 self.request,
                 messages.WARNING,
-                _("You can send only one message per 5 minutes"),
+                _("You can send only one message per 5 sec"),
             )
         return HttpResponseRedirect(reverse_lazy("mainapp:contacts"))
 
