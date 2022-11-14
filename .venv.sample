@@ -1,0 +1,4 @@
+#Django
+DEBUG=
+ENV_TYPE=local|stage|develop|prod
+

@@ -166,7 +166,7 @@ class TestTaskMailSend(TestCase):
         self.assertEqual(django_mail.outbox[0].body, message_text) # почему? django_mail
     #Для проверки отправки используется то, что по умолчанию в качестве бэкенда во время исполнения
 #тестов используется django.core.mail.backends.locmem.EmailBackend. Он добавляет все отправленные
-#сооб#щения в список outbox из модуля django.core.mail.
+#сообщения в список outbox из модуля django.core.mail.
 
 
 class TestNewsSelenium(StaticLiveServerTestCase):
@@ -180,12 +180,6 @@ class TestNewsSelenium(StaticLiveServerTestCase):
                 preambule=f'Preamble{i}',
                 body=f'Body{i}'
             )
-        #CustomUser.objects.create_superuser(username='admin', password='1')
-        #self.client_with_auth = Client()
-        #path_auth = reverse("authapp:login")
-        #self.client_with_auth.post(path_auth, data={"username": "admin", "password": "1"})
-
-        #driver = webdriver.Chrome
 
         self.selenium = WebDriver(
             executable_path=settings.SELENIUM_DRIVER_PATH_FF/"chromedriver.exe"
@@ -240,10 +234,10 @@ class TestNewsSelenium(StaticLiveServerTestCase):
         try:
             self.assertEqual(
                 navbar_el.value_of_css_property("background-color"),
-                "rgb(255, 255, 255, 1)",
+                "rgba(255, 255, 255, 1)",
             )
         except AssertionError:
-            file_path = Path(__file__).resolve().parent.parent / "var" / "screenshots"  #/ "001_navbar_el_scrnsht.png"
+            file_path = Path(__file__).resolve().parent.parent / "var" / "screenshots" / "001_navbar_el_scrnsht.png"
             with open(
                 file_path, "wb"
             ) as outf:

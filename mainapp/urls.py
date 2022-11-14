@@ -11,7 +11,7 @@ urlpatterns = [
     path('', MainPageView.as_view(), name='main'),  #"main_page"
     #path("news/<int:pk>", NewsDetailView.as_view(), name="news_detail"),
 
-    path("news/", NewsListView.as_view(), name="news"),
+    path("news_list/", NewsListView.as_view(), name="news"),
     path("news/create/", NewsCreateView.as_view(), name="news_create"),
     path("news/<int:pk>/detail", NewsDetailView.as_view(), name="news_detail"),
     path("news/<int:pk>/update", NewsUpdateView.as_view(), name="news_update"),
