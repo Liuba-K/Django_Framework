@@ -2,3 +2,7 @@
 DEBUG=
 ENV_TYPE=local|stage|develop|prod
 
+#Social
+GITHUB_KEY=
+GITHUB_SECRET=
+
